@@ -6,3 +6,4 @@ export { default as Register } from "./Register";
 export { default as Logout } from "./Logout";
 export { default as FormPage } from "./FormPage";
 export { default as ItineraryPage } from "./ItineraryPage";
+export { default as VisaPage } from "./VisaPage";

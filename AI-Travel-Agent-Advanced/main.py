@@ -1,5 +1,9 @@
 # main.py
 from fastapi import FastAPI, HTTPException
+# for visa agent
+from fastapi import File, UploadFile, Form
+from visa_agent import VisaAgent
+# end import for visa agent
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from crew import TravelPlannerAgents, TravelRequest
@@ -66,6 +70,43 @@ async def plan_trip(request: TripRequestSchema):
 
     except Exception as e:
         logger.error(f"Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+
+@app.post("/api/assess-visa-upload")
+async def assess_visa_upload(
+    nationality: str = Form(...),
+    destination: str = Form(...),
+    purpose: str = Form(...),
+    documents: str = Form(""),
+    file: UploadFile = File(...)
+):
+    try:
+        logger.info(f"Processing Visa Request for: {nationality} -> {destination}")
+        
+        # 1. Read the uploaded PDF file
+        file_content = await file.read()
+        
+        # 2. Initialize Agent
+        agent = VisaAgent()
+        
+        # 3. Extract Text from PDF
+        pdf_text = agent.extract_text_from_pdf(file_content)
+        
+        # 4. Run Assessment
+        result = agent.assess_visa_with_docs(
+            nationality=nationality,
+            destination=destination,
+            purpose=purpose,
+            additional_docs_text=documents,
+            pdf_content=pdf_text
+        )
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Visa Upload Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
