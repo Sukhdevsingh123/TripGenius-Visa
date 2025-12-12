@@ -8,6 +8,7 @@ const FormPage = () => {
   const navigate = useNavigate();
   const [token, setToken] = useState(JSON.parse(localStorage.getItem("auth")) || "");
   const [userData, setUserData] = useState(null);
+  
   const [formData, setFormData] = useState({
     origin: "",
     destinations: "",
@@ -23,35 +24,32 @@ const FormPage = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (!token) return;
-
-      let axiosConfig = {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      };
-
       try {
-        const response = await axios.get("http://localhost:3000/api/v1/dashboard", axiosConfig);
+        const response = await axios.get("http://localhost:3000/api/v1/dashboard", {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
         setUserData({ username: response.data.msg });
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     };
-
     fetchUserProfile();
   }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // ✅ FIXED: Formatting logic before sending to Python
     const payload = {
       ...formData,
+      // Split strings to arrays
       destinations: formData.destinations.split(",").map((item) => item.trim()),
-      interests: formData.interests.split(",").map((item) => item.trim()),
-      group_size: parseInt(formData.group_size),
+      interests: formData.interests ? formData.interests.split(",").map((item) => item.trim()) : [],
+      // Ensure integer
+      group_size: parseInt(formData.group_size) || 1,
     };
 
-    // Pass formData to itinerary page via state
+    // Navigate to itinerary page
     navigate("/agent-itinerary", { state: { formData: payload } });
   };
 
@@ -59,19 +57,11 @@ const FormPage = () => {
     <>
       <Header />
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-4 md:p-8 font-sans overflow-x-hidden flex items-center justify-center">
-        {/* Animated Background decoration */}
         <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-          <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-blue-600/30 rounded-full blur-[100px] animate-pulse" />
-          <div className="absolute bottom-[-10%] left-[-10%] w-[700px] h-[700px] bg-cyan-600/20 rounded-full blur-[120px]" />
-          <div
-            className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[100px] animate-pulse"
-            style={{ animationDelay: "2s" }}
-          />
+           <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-blue-600/30 rounded-full blur-[100px] animate-pulse" />
         </div>
 
-        {/* Main Container */}
         <div className="relative z-10 w-full max-w-2xl">
-          {/* User Welcome Section */}
           {userData && (
             <div className="mb-6 text-center">
               <h2 className="text-2xl font-bold text-white mb-2">
@@ -80,10 +70,7 @@ const FormPage = () => {
               <p className="text-slate-300">Plan your next adventure</p>
             </div>
           )}
-          {/* Decorative top accent */}
-          <div className="absolute -top-20 left-0 right-0 h-20 bg-gradient-to-b from-blue-500/20 to-transparent rounded-full blur-3xl" />
-
-          {/* Form Card with enhanced styling */}
+          
           <div className="relative">
             <TravelForm
               formData={formData}
@@ -92,9 +79,6 @@ const FormPage = () => {
               loading={false}
             />
           </div>
-
-          {/* Decorative bottom accent */}
-          <div className="absolute -bottom-20 left-0 right-0 h-20 bg-gradient-to-t from-cyan-500/20 to-transparent rounded-full blur-3xl" />
         </div>
       </div>
       <Footer />

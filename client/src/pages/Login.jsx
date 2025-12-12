@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Image from "../assets/image.png";
-import Logo from "../assets/logo.png";
+import Image from "../assets/image.avif";
+import Logo from "../assets/logo.jpg";
 import GoogleSvg from "../assets/icons8-google.svg";
 import { FaEye } from "react-icons/fa6";
 import { FaEyeSlash } from "react-icons/fa6";
@@ -8,7 +8,7 @@ import "../styles/Login.css";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-// import Agent from "../Agent/Agent";
+// import A from "./A"
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -54,6 +54,7 @@ const Login = () => {
   return (
     <div className="login-main">
       <div className="login-left">
+        {/* <A/> */}
         <img src={Image} alt="" />
       </div>
       <div className="login-right">
@@ -62,7 +63,7 @@ const Login = () => {
             <img src={Logo} alt="" />
           </div>
           <div className="login-center">
-            <h2>Welcome back!</h2>
+            <h2>Welcome On TripGenius!</h2>
             <p>Please enter your details</p>
             <form onSubmit={handleLoginSubmit}>
               <input type="email" placeholder="Email" name="email" />

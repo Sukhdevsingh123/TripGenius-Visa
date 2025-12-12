@@ -1,17 +1,33 @@
 # main.py
-from fastapi import FastAPI, HTTPException
-# for visa agent
-from fastapi import File, UploadFile, Form
-from visa_agent import VisaAgent
-# end import for visa agent
-from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware
-from crew import TravelPlannerAgents, TravelRequest
+import hashlib
+import json
 import logging
+from datetime import datetime
+from threading import Lock
+from time import time
+
+from fastapi import FastAPI, HTTPException, File, UploadFile, Form
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+# --- Import your new logic from trip.py ---
+from trip import OpenAITravelPlanner, TravelRequest
+
+# --- Import Visa Agent (Ensure visa_agent.py exists or comment this out) ---
+try:
+    from visa_agent import VisaAgent
+except ImportError:
+    VisaAgent = None
+    print("Warning: visa_agent.py not found. Visa endpoints will fail.")
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Cache Setup
+TRIP_CACHE: dict = {}
+TRIP_CACHE_LOCK = Lock()
+TRIP_CACHE_TTL = 60 * 60  # 1 hour
 
 app = FastAPI()
 
@@ -40,17 +56,34 @@ async def plan_trip(request: TripRequestSchema):
     try:
         logger.info(f"Received request: {request}")
 
-        # Calculate duration
-        from datetime import datetime
-        start = datetime.strptime(request.start_date, "%Y-%m-%d")
-        end = datetime.strptime(request.end_date, "%Y-%m-%d")
-        duration = (end - start).days
-        if duration <= 0: duration = 1
+        # 1. Create a canonical key for caching
+        req_json = json.dumps(request.dict(), sort_keys=True, default=str)
+        key = hashlib.sha256(req_json.encode("utf-8")).hexdigest()
 
-        # Initialize your Agent System
-        planner = TravelPlannerAgents()
+        # 2. Check Cache
+        now = time()
+        with TRIP_CACHE_LOCK:
+            cached = TRIP_CACHE.get(key)
+            if cached:
+                if now - cached.get("ts", 0) < TRIP_CACHE_TTL:
+                    logger.info("Returning cached itinerary")
+                    return {"itinerary": cached["result"], "cached": True}
+                else:
+                    TRIP_CACHE.pop(key, None) # Expired
 
-        # Create the TravelRequest object expected by your crew.py
+        # 3. Calculate Duration
+        try:
+            start = datetime.strptime(request.start_date, "%Y-%m-%d")
+            end = datetime.strptime(request.end_date, "%Y-%m-%d")
+            duration = (end - start).days
+            if duration <= 0: duration = 1
+        except ValueError:
+            duration = 5 # Fallback
+
+        # 4. Initialize Your OpenAI Planner (From trip.py)
+        planner = OpenAITravelPlanner()
+
+        # 5. Create the TravelRequest object (From trip.py)
         travel_req = TravelRequest(
             origin=request.origin,
             destinations=request.destinations,
@@ -60,20 +93,24 @@ async def plan_trip(request: TripRequestSchema):
             budget_range=request.budget_range,
             travel_style=request.travel_style,
             interests=request.interests,
-            group_size=request.group_size
+            group_size=request.group_size,
+            special_requirements=[] # Optional: Add to schema if needed
         )
 
-        # Run the Crew
+        # 6. Run the Planner
         result = planner.plan_trip(travel_req)
 
-        return {"itinerary": result}
+        # 7. Save to Cache
+        with TRIP_CACHE_LOCK:
+            TRIP_CACHE[key] = {"result": result, "ts": now}
+
+        return {"itinerary": result, "cached": False}
 
     except Exception as e:
         logger.error(f"Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-    
 
-
+# --- Visa Endpoint (Kept from your snippet) ---
 @app.post("/api/assess-visa-upload")
 async def assess_visa_upload(
     nationality: str = Form(...),
@@ -82,19 +119,15 @@ async def assess_visa_upload(
     documents: str = Form(""),
     file: UploadFile = File(...)
 ):
+    if not VisaAgent:
+        raise HTTPException(status_code=501, detail="Visa Agent not available")
+        
     try:
         logger.info(f"Processing Visa Request for: {nationality} -> {destination}")
-        
-        # 1. Read the uploaded PDF file
         file_content = await file.read()
-        
-        # 2. Initialize Agent
         agent = VisaAgent()
-        
-        # 3. Extract Text from PDF
         pdf_text = agent.extract_text_from_pdf(file_content)
         
-        # 4. Run Assessment
         result = agent.assess_visa_with_docs(
             nationality=nationality,
             destination=destination,
@@ -102,9 +135,7 @@ async def assess_visa_upload(
             additional_docs_text=documents,
             pdf_content=pdf_text
         )
-        
         return result
-        
     except Exception as e:
         logger.error(f"Visa Upload Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

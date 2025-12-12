@@ -1,44 +1,40 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import TravelItinerary from "../Agent/TravelItinerary";
-import { planTrip } from "../Api/Api";
+import { planTrip } from "../Api/Api"; // Uses the fixed Api.js
 import { Header, Footer } from "../components";
 import axios from "axios";
 
 const ItineraryPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [isCached, setIsCached] = useState(false);
   const [logs, setLogs] = useState([]);
+  
   const formData = location.state?.formData;
   const [token, setToken] = useState(JSON.parse(localStorage.getItem("auth")) || "");
   const [userData, setUserData] = useState(null);
+  const startedRef = useRef(false);
 
-  // Fetch user profile data
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (!token) return;
-
-      let axiosConfig = {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      };
-
       try {
-        const response = await axios.get("http://localhost:3000/api/v1/dashboard", axiosConfig);
+        const response = await axios.get("http://localhost:3000/api/v1/dashboard", {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         setUserData({ username: response.data.msg });
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     };
-
     fetchUserProfile();
   }, [token]);
 
-  // Redirect to form if no formData
   useEffect(() => {
     if (!formData) {
       toast.warning("Please fill the form first");
@@ -47,7 +43,8 @@ const ItineraryPage = () => {
   }, [formData, navigate]);
 
   useEffect(() => {
-    if (formData) {
+    if (formData && !startedRef.current) {
+      startedRef.current = true;
       startTravelPlanning();
     }
   }, [formData]);
@@ -55,90 +52,54 @@ const ItineraryPage = () => {
   const startTravelPlanning = async () => {
     setLoading(true);
     setResult(null);
-    setLogs([
-      "🚀 Initializing AI Travel Agent...",
-      "🔗 Authenticating travel agents...",
-      "📍 Processing your travel preferences...",
-    ]);
+    setIsCached(false);
+    
+    setLogs(["🚀 Initializing AI Travel Agent...", "🔗 Connecting to OpenAI Neural Network..."]);
+
+    let logInterval = null;
 
     try {
-      // Add simulated logs to show progress
-      const logInterval = setInterval(() => {
-        setLogs((prev) => [
-          ...prev,
-          `⏳ Processing... (${Math.random() > 0.5
-            ? "Analyzing destinations"
-            : "Calculating routes"
-          })`,
-        ]);
-      }, 2000);
+      logInterval = setInterval(() => {
+        const messages = ["⏳ Consulting Destination Analyst...", "🌤️ Checking historical weather...", "🗺️ Optimizing routes..."];
+        setLogs((prev) => [...prev, messages[Math.floor(Math.random() * messages.length)]]);
+      }, 2500);
 
-      // Call the API endpoint
+      // ✅ CALL API
       const response = await planTrip(formData);
 
-      clearInterval(logInterval);
+      if (logInterval) clearInterval(logInterval);
 
-      // Add completion logs
-      setLogs((prev) => [
-        ...prev,
-        "✅ AI Analysis Complete",
-        "📝 Generating your personalized itinerary...",
-      ]);
+      setLogs((prev) => [...prev, "✅ Analysis Complete", "📝 Generating Itinerary..."]);
 
-      // Set the result
-      if (response.itinerary) {
+      if (response && response.itinerary) {
         setResult(response.itinerary);
-        setLogs((prev) => [...prev, "🎉 Itinerary ready!"]);
+        if (response.cached) setIsCached(true);
+        toast.success("Travel plan generated!");
       } else {
-        throw new Error("No itinerary received from server");
+        throw new Error("Invalid response");
       }
 
-      setLoading(false);
-      toast.success("✅ Travel plan generated successfully!");
     } catch (error) {
+      console.error("Error:", error);
+      if (logInterval) clearInterval(logInterval);
+      setLogs((prev) => [...prev, `❌ Error: ${error.message}`]);
+      toast.error("Failed to generate plan");
+    } finally {
       setLoading(false);
-
-      const errorMessage =
-        error.response?.data?.detail ||
-        error.message ||
-        "Unknown error occurred";
-      const userFriendlyError = `❌ Error: ${errorMessage}`;
-
-      setLogs((prev) => [
-        ...prev,
-        userFriendlyError,
-        "💡 Ensure:",
-        "  • Backend server (main.py) is running on http://localhost:8000",
-        "  • All AI models are properly configured",
-        "  • Check browser console for more details",
-      ]);
-
-      console.error("Travel planning error:", error);
-      toast.error(`Failed to generate travel plan: ${errorMessage}`);
     }
   };
-
 
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-slate-900 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black p-4 md:p-8 font-sans overflow-x-hidden">
-        {/* Background decoration */}
-        <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-          <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[100px]" />
-          <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-[120px]" />
-        </div>
-
+      <div className="min-h-screen bg-slate-900 p-4 md:p-8 font-sans overflow-x-hidden">
         <div className="max-w-6xl mx-auto relative z-10 min-h-screen">
-          {/* User Welcome Section */}
           {userData && (
-            <div className="mb-6 text-center">
-              <p className="text-slate-300">
-                Planning your journey, <span className="text-blue-400 font-semibold text-lg">{userData.username}</span>
-              </p>
+            <div className="mb-6 text-center text-slate-300">
+               Planning for <span className="text-blue-400 font-semibold">{userData.username}</span>
             </div>
           )}
-          <TravelItinerary result={result} logs={logs} loading={loading} />
+          <TravelItinerary result={result} logs={logs} loading={loading} isCached={isCached} />
         </div>
       </div>
       <Footer />
@@ -147,4 +108,3 @@ const ItineraryPage = () => {
 };
 
 export default ItineraryPage;
-

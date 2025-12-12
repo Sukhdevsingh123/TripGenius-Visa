@@ -1,40 +1,25 @@
 import axios from 'axios';
 
+// ✅ FIXED: Pointing to FastAPI Server
 const API_URL = 'http://localhost:8000/api';
 
-// Configure axios with timeout
 const apiClient = axios.create({
   baseURL: API_URL,
-  timeout: 120000, // 2 minutes timeout for long-running requests
+  timeout: 120000, // 2 minutes timeout
 });
 
-/**
- * Plan a trip with the AI Travel Agent
- * @param {Object} tripData - Trip details including origin, destinations, dates, budget, etc.
- * @returns {Promise<Object>} - Travel itinerary from the AI agent
- */
 export const planTrip = async (tripData) => {
   try {
-    console.log('Sending trip request:', tripData);
-    const response = await apiClient.post('/plan-trip', tripData);
-    console.log('Trip plan response:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('API Error:', error.response?.data || error.message);
-    throw error;
-  }
-};
+    console.log("Sending trip request:", tripData);
 
-/**
- * Get health status of the API
- * @returns {Promise<Object>} - Health status
- */
-export const getHealthStatus = async () => {
-  try {
-    const response = await apiClient.get('/health');
+    // ✅ FIXED: Sending direct POST request
+    const response = await apiClient.post("/plan-trip", tripData);
+
+    console.log("Trip plan response:", response.data);
     return response.data;
+
   } catch (error) {
-    console.error('Health check error:', error.message);
+    console.error("API Error:", error.response?.data || error.message);
     throw error;
   }
 };
