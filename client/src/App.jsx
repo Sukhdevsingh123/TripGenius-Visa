@@ -48,7 +48,11 @@ const router = createBrowserRouter([
         element: <Logout />,
       },
       {
-        path: "agent-visa", 
+        path: "agent-visa",
+        element: <VisaPage />,
+      },
+      {
+        path: "visa-agent",
         element: <VisaPage />,
       },
     ],

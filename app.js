@@ -6,24 +6,26 @@ const express = require("express");
 const cors = require('cors')
 const app = express();
 const mainRouter = require("./routes/user");
+const historyRouter = require("./routes/HistoryRoute");
 
 app.use(express.json());
 
 app.use(cors())
 app.use("/api/v1", mainRouter);
+app.use("/api/history", historyRouter);
 
 const port = process.env.PORT || 3000;
 
 const start = async () => {
 
-    try {        
+    try {
         await connectDB(process.env.MONGO_URI);
         app.listen(port, () => {
             console.log(`Server is listening on port ${port}`);
         })
 
     } catch (error) {
-       console.log(error); 
+        console.log(error);
     }
 }
 

@@ -2,19 +2,19 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import TravelItinerary from "../Agent/TravelItinerary";
-import { planTrip } from "../Api/Api"; // Uses the fixed Api.js
+import { planTrip, saveHistory } from "../Api/Api"; // Added saveHistory
 import { Header, Footer } from "../components";
 import axios from "axios";
 
 const ItineraryPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [isCached, setIsCached] = useState(false);
   const [logs, setLogs] = useState([]);
-  
+
   const formData = location.state?.formData;
   const [token, setToken] = useState(JSON.parse(localStorage.getItem("auth")) || "");
   const [userData, setUserData] = useState(null);
@@ -25,7 +25,7 @@ const ItineraryPage = () => {
       if (!token) return;
       try {
         const response = await axios.get("http://localhost:3000/api/v1/dashboard", {
-            headers: { 'Authorization': `Bearer ${token}` }
+          headers: { 'Authorization': `Bearer ${token}` }
         });
         setUserData({ username: response.data.msg });
       } catch (error) {
@@ -53,7 +53,7 @@ const ItineraryPage = () => {
     setLoading(true);
     setResult(null);
     setIsCached(false);
-    
+
     setLogs(["🚀 Initializing AI Travel Agent...", "🔗 Connecting to OpenAI Neural Network..."]);
 
     let logInterval = null;
@@ -75,6 +75,32 @@ const ItineraryPage = () => {
         setResult(response.itinerary);
         if (response.cached) setIsCached(true);
         toast.success("Travel plan generated!");
+
+        // ✅ AUTO-SAVE TO HISTORY
+        try {
+          await saveHistory({
+            type: "TRIP_PLAN",
+            status: "Generated",
+            details: {
+              origin: formData.origin,
+              destinations: formData.destinations,
+              startDate: formData.start_date,
+              endDate: formData.end_date,
+              duration: formData.duration,
+              budgetRange: formData.budget_range,
+              travelStyle: formData.travel_style,
+              interests: formData.interests,
+              groupSize: formData.group_size,
+              fullResult: response.itinerary,
+              cached: response.cached || false
+            }
+          });
+          console.log("✅ Trip plan saved to history");
+        } catch (historyError) {
+          console.error("Failed to save history:", historyError);
+          // Don't show error to user, it's a background operation
+        }
+
       } else {
         throw new Error("Invalid response");
       }
@@ -96,7 +122,7 @@ const ItineraryPage = () => {
         <div className="max-w-6xl mx-auto relative z-10 min-h-screen">
           {userData && (
             <div className="mb-6 text-center text-slate-300">
-               Planning for <span className="text-blue-400 font-semibold">{userData.username}</span>
+              Planning for <span className="text-blue-400 font-semibold">{userData.username}</span>
             </div>
           )}
           <TravelItinerary result={result} logs={logs} loading={loading} isCached={isCached} />

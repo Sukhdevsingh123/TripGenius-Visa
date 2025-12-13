@@ -1,11 +1,11 @@
 
-
 import React, { useState, useEffect } from "react";
 import { FileText, UploadCloud, Loader2, CheckCircle, AlertTriangle, Download, ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Header, Footer } from "../components"; // Adjust path as needed
+import { Header, Footer } from "../components";
+import { saveHistory } from "../Api/Api"; // Added for auto-save
 import axios from "axios";
-import jsPDF from "jspdf"; // Import PDF generator
+import jsPDF from "jspdf";
 
 const VisaPage = () => {
     const navigate = useNavigate();
@@ -46,12 +46,12 @@ const VisaPage = () => {
         if (!result) return;
 
         const doc = new jsPDF();
-        
+
         // 1. Header / Title
         doc.setFontSize(22);
         doc.setTextColor(0, 51, 102); // Dark Blue
         doc.text("Visa Assessment & Approval Letter", 20, 20);
-        
+
         doc.setFontSize(10);
         doc.setTextColor(100);
         doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 30);
@@ -63,7 +63,7 @@ const VisaPage = () => {
         doc.setFontSize(14);
         doc.setTextColor(0);
         doc.text("Candidate Profile", 20, 50);
-        
+
         doc.setFontSize(11);
         doc.setTextColor(50);
         doc.text(`Name Detected: ${result.candidate_name_detected || "N/A"}`, 20, 60);
@@ -75,7 +75,7 @@ const VisaPage = () => {
         doc.setFontSize(14);
         doc.setTextColor(0);
         doc.text("IELTS Document Analysis", 20, 95);
-        
+
         doc.setFontSize(11);
         doc.setTextColor(50);
         doc.text(`Overall Band Score: ${result.ielts_scores_detected?.Overall}`, 20, 105);
@@ -87,11 +87,11 @@ const VisaPage = () => {
         // 4. AI Recommendation
         doc.setFillColor(240, 240, 240); // Light gray box
         doc.rect(20, 130, 170, 40, 'F');
-        
+
         doc.setFontSize(14);
         doc.setTextColor(0, 100, 0); // Green
         doc.text("AI Recommendation: " + result.admin_approval_status, 25, 140);
-        
+
         doc.setFontSize(10);
         doc.setTextColor(60);
         // Split text to fit PDF width
@@ -130,6 +130,30 @@ const VisaPage = () => {
             });
             const data = await response.json();
             setResult(data);
+
+            // ✅ AUTO-SAVE TO HISTORY
+            try {
+                await saveHistory({
+                    type: "VISA_ASSESSMENT",
+                    status: data.admin_approval_status || "Analysis Ready",
+                    details: {
+                        nationality: formData.nationality,
+                        destination: formData.destination,
+                        purpose: formData.purpose,
+                        eligibilityScore: data.eligibility_score,
+                        eligibilityReason: data.eligibility_reason,
+                        adminApprovalStatus: data.admin_approval_status,
+                        missingDocuments: data.missing_documents || [],
+                        processingTime: data.processing_time,
+                        fullResult: JSON.stringify(data)
+                    }
+                });
+                console.log("✅ Visa assessment saved to history");
+            } catch (historyError) {
+                console.error("Failed to save history:", historyError);
+                // Don't show error to user, it's a background operation
+            }
+
         } catch (error) {
             console.error(error);
             alert("Analysis failed.");
@@ -143,7 +167,7 @@ const VisaPage = () => {
             <Header />
             <div className="min-h-screen bg-slate-900 text-slate-100 p-4 md:p-8 font-sans">
                 <div className="max-w-6xl mx-auto">
-                    
+
                     {/* Header */}
                     <div className="flex justify-between items-center mb-8">
                         <div>
@@ -199,7 +223,7 @@ const VisaPage = () => {
 
                             {result && (
                                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                    
+
                                     {/* 1. DOCUMENT ANALYSIS CARD */}
                                     <div className="bg-white text-slate-900 p-6 rounded-2xl shadow-xl border-l-8 border-indigo-600 relative overflow-hidden">
                                         <div className="flex justify-between items-start mb-6">
@@ -241,11 +265,11 @@ const VisaPage = () => {
                                     <div className="bg-slate-800 border border-slate-700 p-8 rounded-2xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-8">
                                         <div className="flex-1">
                                             <h2 className="text-slate-400 text-xs font-bold uppercase mb-2">AI Recommendation</h2>
-                                            
+
                                             <div className={`text-4xl font-black mb-3 ${result.admin_approval_status === 'Recommended' ? 'text-green-400' : 'text-yellow-400'}`}>
                                                 {result.admin_approval_status}
                                             </div>
-                                            
+
                                             <p className="text-slate-300 text-sm leading-relaxed mb-4">
                                                 {result.eligibility_reason}
                                             </p>
@@ -257,8 +281,8 @@ const VisaPage = () => {
                                                         <ShieldCheck className="w-5 h-5" />
                                                         <span className="font-bold text-sm">System Auto-Approved</span>
                                                     </div>
-                                                    
-                                                    <button 
+
+                                                    <button
                                                         onClick={generatePDF}
                                                         className="flex items-center gap-2 bg-white text-slate-900 px-4 py-2 rounded-lg font-bold hover:bg-slate-200 transition-colors"
                                                     >
