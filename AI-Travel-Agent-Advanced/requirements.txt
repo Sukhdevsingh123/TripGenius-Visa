@@ -1,3 +1,4 @@
+
 aiohttp==3.9.5
 aiosignal==1.3.1
 alembic==1.13.1
@@ -200,3 +201,5 @@ crewai_tools
 crewai
 dotenv
 requests
+python-multipart
+PyPDF2

@@ -14,12 +14,13 @@ from pydantic import BaseModel
 from trip import OpenAITravelPlanner, TravelRequest
 
 # --- Import Visa Agent (Ensure visa_agent.py exists or comment this out) ---
+import traceback
 try:
     from visa_agent import VisaAgent
-except ImportError:
+except ImportError as e:
     VisaAgent = None
-    print("Warning: visa_agent.py not found. Visa endpoints will fail.")
-
+    print(f"Warning: Failed to import visa_agent. Visa endpoints will fail. Error: {e}")
+    traceback.print_exc()
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
