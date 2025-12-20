@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 // API URLs
-const PYTHON_API_URL = 'http://localhost:8000/api';
-const NODE_API_URL = 'http://localhost:3000/api';
+const PYTHON_API_URL = 'https://tripgenius-visa-1.onrender.com/api';
+const NODE_API_URL = 'https://tripgenius-visa-iltf.onrender.com/api';
 
 // Python API Client (for AI services)
 const pythonClient = axios.create({

@@ -6,7 +6,7 @@
 - **Features:**
   - Modern glassmorphic design with gradient effects
   - User profile display with avatar
-  - Fetches user data from backend API (`http://localhost:3000/api/v1/dashboard`)
+  - Fetches user data from backend API (`https://tripgenius-visa-iltf.onrender.com/api/v1/dashboard`)
   - Shows username from backend response
   - Logout functionality
   - Responsive mobile menu
@@ -57,7 +57,7 @@
 
 All components fetch user data from the backend using:
 ```javascript
-const response = await axios.get("http://localhost:3000/api/v1/dashboard", {
+const response = await axios.get("https://tripgenius-visa-iltf.onrender.com/api/v1/dashboard", {
   headers: {
     'Authorization': `Bearer ${token}`
   }

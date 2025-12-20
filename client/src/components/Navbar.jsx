@@ -21,7 +21,7 @@ const Navbar = () => {
             };
 
             try {
-                const response = await axios.get("http://localhost:3000/api/v1/dashboard", axiosConfig);
+                const response = await axios.get("https://tripgenius-visa-iltf.onrender.com/api/v1/dashboard", axiosConfig);
                 setUserData({ username: response.data.msg });
             } catch (error) {
                 console.error('Error fetching user data:', error);

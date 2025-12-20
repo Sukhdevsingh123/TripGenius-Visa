@@ -131,7 +131,7 @@ useEffect(() => {
     if (!token) return;
     
     const response = await axios.get(
-      "http://localhost:3000/api/v1/dashboard",
+      "https://tripgenius-visa-iltf.onrender.com/api/v1/dashboard",
       {
         headers: { 'Authorization': `Bearer ${token}` }
       }

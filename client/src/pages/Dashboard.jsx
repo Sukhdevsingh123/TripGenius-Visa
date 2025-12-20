@@ -34,7 +34,7 @@ const Dashboard = () => {
     if (!token) return;
 
     try {
-      const response = await axios.get("http://localhost:3000/api/v1/dashboard", {
+      const response = await axios.get("https://tripgenius-visa-iltf.onrender.com/api/v1/dashboard", {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

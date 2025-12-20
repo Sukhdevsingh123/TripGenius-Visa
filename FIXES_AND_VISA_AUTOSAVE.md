@@ -182,7 +182,9 @@ User uploads PDF → AI analyzes → ✅ Auto-saved to DB → Shows in Dashboard
 3. **Test API directly:**
    ```bash
    curl -H "Authorization: Bearer YOUR_TOKEN" \
-        http://localhost:3000/api/history/user/YOUR_USER_ID
+      https://tripgenius-visa-iltf.onrender.com/api/history/user/YOUR_USER_ID
+    
+        
    ```
 4. **Restart servers** if needed
 

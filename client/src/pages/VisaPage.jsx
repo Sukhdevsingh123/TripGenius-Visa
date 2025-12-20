@@ -27,7 +27,7 @@ const VisaPage = () => {
         const fetchUserProfile = async () => {
             if (!token) return;
             try {
-                const response = await axios.get("http://localhost:3000/api/v1/dashboard", {
+                const response = await axios.get("https://tripgenius-visa-iltf.onrender.com/api/v1/dashboard", {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 setUserData({ username: response.data.msg });
@@ -124,7 +124,7 @@ const VisaPage = () => {
         dataToSend.append("file", file);
 
         try {
-            const response = await fetch("http://localhost:8000/api/assess-visa-upload", {
+            const response = await fetch("https://tripgenius-visa-1.onrender.com/api/assess-visa-upload", {
                 method: "POST",
                 body: dataToSend,
             });

@@ -38,7 +38,7 @@ function App() {
     };
 
     try {
-      const response = await axios.post('http://localhost:8000/api/plan-trip', payload);
+      const response = await axios.post('https://tripgenius-visa-1.onrender.com/api/plan-trip', payload);
       setResult(response.data.itinerary);
       if (response.data.cached) setIsCached(true);
     } catch (error) {
