@@ -1,5 +1,4 @@
 
-```md
 # 🌍 VisaVersa AI — Smart Travel & Visa Intelligence Platform ✈️🤖
 
 > **Hackathon Project** — An end-to-end AI-powered platform that combines  
