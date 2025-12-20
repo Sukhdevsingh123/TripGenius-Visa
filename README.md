@@ -1,7 +1,7 @@
 
-# 🌍 VisaVersa AI — Smart Travel & Visa Intelligence Platform ✈️🤖
+# 🌍 TripGenius AI — Smart Travel & Visa Intelligence Platform ✈️🤖
 
-> **Hackathon Project** — An end-to-end AI-powered platform that combines  
+> **An end-to-end AI-powered platform that combines  
 **secure authentication**, **intelligent travel planning**, and **AI-driven visa & IELTS analysis**  
 using **MERN Stack + Python (FastAPI) + LLMs**.
 
@@ -10,7 +10,7 @@ using **MERN Stack + Python (FastAPI) + LLMs**.
 ## 🔥 Live Demo
 
 🚀 **Frontend (Vercel):**  
-👉 https://your-vercel-live-link.vercel.app
+👉 https://tripvisa.vercel.app/
 
 📡 **APIs:**
 - Node Auth API: `http://localhost:3000`
@@ -22,20 +22,20 @@ using **MERN Stack + Python (FastAPI) + LLMs**.
 
 ### 🔐 Authentication (MERN Stack)
 <p align="center">
-  <img src="client/src/assets/login.png" width="32%" />
-  <img src="client/src/assets/signup.png" width="32%" />
+  <img src="client/src/assets/login.png" width="50%" />
+  <img src="client/src/assets/signup.png" width="50%" />
  
 </p>
 
 ### 🤖 AI Visa & IELTS Analyzer
 <p align="center">
-  <img src="client/src/assets/Visa_agent.png" width="48%" />
+  <img src="client/src/assets/Visa_agent.png" width="100%" />
 </p>
 
 ### 🌍 AI Travel Planner
 <p align="center">
-  <img src="client/src/assets/Travel_result1.png" width="48%" />
-  <img src="client/src/assets/travel-result.png" width="48%" />
+  <img src="client/src/assets/Travel_result1.png" width="50%" />
+  <img src="client/src/assets/travel-result.png" width="50%" />
 </p>
 
 ---
@@ -113,8 +113,9 @@ Frontend (React + Tailwind)
 ### Backend (Python)
 - FastAPI
 - LangChain
-- OpenAI (GPT-4o-mini)
+- Serper
 - PyPDF2
+- OpenAi
 - CrewAI (Travel Planning)
 - python-dotenv
 
@@ -124,7 +125,7 @@ Frontend (React + Tailwind)
 
 ```
 
-VisaVersaAi/
+TripGenius-Visa/
 │
 ├── client/                     # React Frontend
 │   ├── src/
@@ -138,7 +139,7 @@ VisaVersaAi/
 │   ├── trip.py
 │   ├── debug_api.py
 │   ├── requirements.txt
-│
+│   |---Crew.py
 └── README.md
 
 ````
@@ -168,7 +169,7 @@ http://localhost:5173
 ### 2️⃣ Node.js Backend (Auth)
 
 ```bash
-cd server
+cd TripGenius-Visa
 npm install
 npm start
 ```
@@ -201,8 +202,9 @@ python main.py
 #### `.env` (Python)
 
 ```env
-OPENAI_API_KEY="your_openai_key"
 GOOGLE_API_KEY="your_google_key"
+     OR
+OPENAI_API_KEY="your_openai_key"
 SERPER_API_KEY="your_serper_key"
 ```
 
@@ -237,7 +239,6 @@ POST /api/assess-visa-upload
 * 🧱 Clean architecture
 * ⚡ Fast responses with caching
 * 🎨 Polished UI
-* 📄 Auto-generated official documents
 
 ---
 
@@ -247,8 +248,7 @@ POST /api/assess-visa-upload
 AI Engineer | Full-Stack Developer
 
 * 🔗 GitHub: [https://github.com/Sukhdevsingh123](https://github.com/Sukhdevsingh123)
-* 💼 LinkedIn: [https://www.linkedin.com/in/your-linkedin](https://www.linkedin.com/in/your-linkedin)
-* 📧 Email: [your-email@example.com](mailto:your-email@example.com)
+* 📧 Email: [sukhdev72361234@gmail.com](mailto:sukhdev72361234@gmail.com)
 
 ---
 
@@ -262,28 +262,5 @@ AI Engineer | Full-Stack Developer
 
 ---
 
-## 🏆 Hackathon Ready
-
-> **VisaVersa AI** is designed to impress judges with:
->
-> * Clear value
-> * Technical depth
-> * AI innovation
-> * Production-grade thinking
-
----
-
 ⭐ **If you like this project, give it a star and support innovation!**
 
-```
-
----
-
-If you want next, I can:
-- 🎨 Customize README theme for **Devpost / MLH**
-- 🏆 Add **Hackathon pitch section**
-- 📽️ Create **demo script**
-- 📊 Add **architecture diagram**
-
-Just tell me 👌
-```
