@@ -1,17 +1,3 @@
-Perfect — I’ve understood **everything** 👍
-Below is a **single, unified, hackathon-ready, attractive `README.md`** that:
-
-* ✅ Covers **MERN Auth backend**
-* ✅ Covers **Python AI backend (Travel + Visa Agent)**
-* ✅ Covers **single React frontend**
-* ✅ Shows **images from `client/src/assets`**
-* ✅ Mentions **Vercel live link**
-* ✅ Includes **env setup (Node + Python)**
-* ✅ Looks **professional, designed, and judge-friendly**
-
-You can **copy-paste this directly** as `README.md`.
-
----
 
 ```md
 # 🌍 VisaVersa AI — Smart Travel & Visa Intelligence Platform ✈️🤖
