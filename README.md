@@ -22,8 +22,8 @@ using **MERN Stack + Python (FastAPI) + LLMs**.
 
 ### 🔐 Authentication (MERN Stack)
 <p align="center">
-  <img src="client/src/assets/login.png" width="50%" />
-  <img src="client/src/assets/signup.png" width="50%" />
+  <img src="client/src/assets/login.png" width="48%" />
+  <img src="client/src/assets/signup.png" width="48%" />
  
 </p>
 
@@ -34,8 +34,8 @@ using **MERN Stack + Python (FastAPI) + LLMs**.
 
 ### 🌍 AI Travel Planner
 <p align="center">
-  <img src="client/src/assets/Travel_result1.png" width="50%" />
-  <img src="client/src/assets/travel-result.png" width="50%" />
+  <img src="client/src/assets/Travel_result1.png" width="48%" />
+  <img src="client/src/assets/travel-result.png" width="48%" />
 </p>
 
 ---
