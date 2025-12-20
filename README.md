@@ -23,19 +23,18 @@ using **MERN Stack + Python (FastAPI) + LLMs**.
 ### 🔐 Authentication (MERN Stack)
 <p align="center">
   <img src="client/src/assets/login.png" width="32%" />
-  <img src="client/src/assets/register.png" width="32%" />
-  <img src="client/src/assets/dashboard.png" width="32%" />
+  <img src="client/src/assets/signup.png" width="32%" />
+ 
 </p>
 
 ### 🤖 AI Visa & IELTS Analyzer
 <p align="center">
-  <img src="client/src/assets/visa-analyzer.png" width="48%" />
-  <img src="client/src/assets/visa-result.png" width="48%" />
+  <img src="client/src/assets/Visa_agent.png" width="48%" />
 </p>
 
 ### 🌍 AI Travel Planner
 <p align="center">
-  <img src="client/src/assets/travel-planner.png" width="48%" />
+  <img src="client/src/assets/Travel_result1.png" width="48%" />
   <img src="client/src/assets/travel-result.png" width="48%" />
 </p>
 
